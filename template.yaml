@@ -1,0 +1,175 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  movie-crud-app
+  
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+#Conditions:
+#  IsProduction: !Equals [!Ref "AWS::StackName", "sam-app-prod"]
+
+Resources:
+  GetItemsFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: lambda-handlers/get-items/
+      Handler: get-items.lambdaHandler
+      Runtime: nodejs18.x
+      Description: A simple function to get items
+      Policies:
+        #Give Create/Read/Update/Delete permissions to MovieTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MovieTable
+      Environment:
+        Variables:
+          #Make table name accessible as environment variable from function code during execution
+          MOVIE_TABLE: !Ref MovieTable
+      Architectures:
+        - x86_64
+      Layers:
+        - !Ref DependenciesLayer
+      Events:
+        GetItems:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /items
+            Method: get
+  GetItemByKeySchemaFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: lambda-handlers/get-item-by-key-schema/
+      Handler: get-item-by-key-schema.lambdaHandler
+      Runtime: nodejs18.x
+      Description: A simple function to get item by key-schema
+      Policies:
+        #Give Create/Read/Update/Delete permissions to MovieTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MovieTable
+      Environment:
+        Variables:
+          #Make table name accessible as environment variable from function code during execution
+          MOVIE_TABLE: !Ref MovieTable
+      Architectures:
+        - x86_64
+      Layers:
+        - !Ref DependenciesLayer
+      Events:
+        GetItemByKeySchema:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /items/{year}/{title}
+            Method: get
+  PutItemFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: lambda-handlers/put-item/
+      Handler: put-item.lambdaHandler
+      Runtime: nodejs18.x
+      Description: A simple function to put item
+      Policies:
+        #Give Create/Read/Update/Delete permissions to MovieTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MovieTable
+      Environment:
+        Variables:
+          #Make table name accessible as environment variable from function code during execution
+          MOVIE_TABLE: !Ref MovieTable
+      Architectures:
+        - x86_64
+      Layers:
+        - !Ref DependenciesLayer
+      Events:
+        PutItem:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /items
+            Method: put
+  DeleteItemFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: lambda-handlers/delete-item/
+      Handler: delete-item.lambdaHandler
+      Runtime: nodejs18.x
+      Description: A simple function to delete item
+      Policies:
+        #Give Create/Read/Update/Delete permissions to MovieTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MovieTable
+      Environment:
+        Variables:
+          #Make table name accessible as environment variable from function code during execution
+          MOVIE_TABLE: !Ref MovieTable
+      Architectures:
+        - x86_64
+      Layers:
+        - !Ref DependenciesLayer
+      Events:
+        DeleteItem:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /items/{year}/{title}
+            Method: delete
+  
+  DependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+        LayerName: sam-app-dependencies
+        Description: Dependencies for movie crud app (aws-sdk/client-dynamodb)
+        ContentUri: dependencies/
+        CompatibleRuntimes:
+          - nodejs18.x
+        LicenseInfo: 'MIT'
+        RetentionPolicy: Retain
+  
+  MovieTable:
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      AttributeDefinitions: 
+        - AttributeName: year
+          AttributeType: N
+        - AttributeName: title
+          AttributeType: S
+      KeySchema: 
+        - AttributeName: year
+          KeyType: HASH #Partition key
+        - AttributeName: title
+          KeyType: RANGE #Sort key
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 10
+        WriteCapacityUnits: 10
+      TableName: "MovieTable"
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  MovieCrudApi:
+    Description: "API Gateway endpoint URL for Prod stage for Movie Crud Functions"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/items/"
+  GetItemsFunction:
+    Description: "Movie Crud Lambda Function ARN"
+    Value: !GetAtt GetItemsFunction.Arn
+  GetItemsFunctionIamRole:
+    Description: "Implicit IAM Role created for Movie Crud function"
+    Value: !GetAtt GetItemsFunctionRole.Arn
+  GetItemByKeySchemaFunction:
+    Description: "Movie Crud Lambda Function ARN"
+    Value: !GetAtt GetItemByKeySchemaFunction.Arn
+  GetItemByKeySchemaFunctionIamRole:
+    Description: "Implicit IAM Role created for Movie Crud function"
+    Value: !GetAtt GetItemByKeySchemaFunctionRole.Arn
+  PutItemFunction:
+    Description: "Movie Crud Lambda Function ARN"
+    Value: !GetAtt PutItemFunction.Arn
+  PutItemFunctionIamRole:
+    Description: "Implicit IAM Role created for Movie Crud function"
+    Value: !GetAtt PutItemFunctionRole.Arn
+  DeleteItemFunction:
+    Description: "Movie Crud Lambda Function ARN"
+    Value: !GetAtt DeleteItemFunction.Arn
+  DeleteItemFunctionIamRole:
+    Description: "Implicit IAM Role created for Movie Crud function"
+    Value: !GetAtt DeleteItemFunctionRole.Arn
