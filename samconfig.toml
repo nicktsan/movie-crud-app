@@ -16,15 +16,15 @@ parallel = true
 [default.deploy.parameters]
 capabilities = "CAPABILITY_IAM"
 confirm_changeset = false
-resolve_s3 = true
-#s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-sn6j3zgiv446"
+#resolve_s3 = true
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-sn6j3zgiv446"
 s3_prefix = "movie-crud-app"
 region = "us-east-1"
 image_repositories = []
 
 [default.package]
 [default.package.parameters]
-resolve_s3 = true
+#resolve_s3 = true
 
 [default.sync]
 [default.sync.parameters]
