@@ -1,7 +1,7 @@
 pipeline {
   agent any
   environment {
-    PIPELINE_USER_CREDENTIAL_ID = 'ec89e7fc-f443-4785-a6f9-b78297db7717'
+    PIPELINE_USER_CREDENTIAL_ID = 'AKIA5A2KRUU75DUXIZPB'
     SAM_TEMPLATE = 'template.yaml'
     MAIN_BRANCH = 'main'
     TESTING_STACK_NAME = 'movie-crud-app-dev'
