@@ -69,12 +69,13 @@ Run functions locally and invoke them with the `sam local invoke` command.
 movie-crud-app$ sam local invoke GetItemsFunction --event events/GetItems.json
 movie-crud-app$ sam local invoke GetItemByKeySchemaFunction --event events/GetItemKeySchema.json
 movie-crud-app$ sam local invoke PutItemFunction --event events/PutItem.json
+movie-crud-app$ sam local invoke DeleteItemFunction --event events/DeleteItem.json
 ```
 
-The SAM CLI can also emulate your application's API. Use the `sam local start-api` to run the API locally on port 3000.
+The SAM CLI can also emulate your application's API. Use the `sam local start-api` to run the API locally on any port.
 
 ```bash
-movie-crud-app$ sam local start-api
+movie-crud-app$ sam local start-api --port 3000
 movie-crud-app$ curl http://localhost:3000/
 ```
 
@@ -101,6 +102,8 @@ To simplify troubleshooting, SAM CLI has a command called `sam logs`. `sam logs`
 ```bash
 movie-crud-app$ sam logs -n GetItemsFunction --stack-name movie-crud-app --tail
 movie-crud-app$ sam logs -n GetItemByKeySchemaFunction --stack-name movie-crud-app --tail
+movie-crud-app$ sam logs -n DeleteItemFunction --stack-name movie-crud-app --tail
+movie-crud-app$ sam logs -n PutItemFunction --stack-name movie-crud-app --tail
 ```
 
 You can find more information and examples about filtering Lambda function logs in the [SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
