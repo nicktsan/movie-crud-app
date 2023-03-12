@@ -32,6 +32,20 @@ pipeline {
     //     '''
     //   }
     // }
+    stage('echo current user') {
+      agent {
+        docker {
+          // If you only use a single runtime, replace with a proper image from 
+          // https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-image-repositories.html
+          image 'public.ecr.aws/sam/build-provided'
+        }
+      }
+      steps {
+      sh '''
+          echo current user: $USER
+        '''
+      }
+    }
 
     stage('build-and-deploy-feature') {
       // this stage is triggered only for feature branches (feature*),
@@ -81,6 +95,7 @@ pipeline {
         }
       }
       steps {
+        sh 'echo current user: $USER'
         sh 'sam build --template ${SAM_TEMPLATE} --use-container'
         withAWS(
             credentials: env.PIPELINE_USER_CREDENTIAL_ID,
@@ -177,6 +192,7 @@ pipeline {
             role: env.PROD_PIPELINE_EXECUTION_ROLE,
             roleSessionName: 'prod-deployment') {
           sh '''
+            echo current user: $USER
             sam deploy --stack-name ${PROD_STACK_NAME} \
               --template packaged-prod.yaml \
               --capabilities CAPABILITY_IAM \
