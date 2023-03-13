@@ -178,6 +178,7 @@ pipeline {
           // If you only use a single runtime, replace with a proper image from 
           // https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-image-repositories.html
           image 'public.ecr.aws/sam/build-provided'
+          args '-u jenkins:jenkins'
         }
       }
       steps {
