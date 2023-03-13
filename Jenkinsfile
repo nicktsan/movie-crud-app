@@ -44,9 +44,7 @@ pipeline {
         wrap([$class: 'BuildUser']) {
           echo "userId=${BUILD_USER_ID},fullName=${BUILD_USER},email=${BUILD_USER_EMAIL}"
         }
-        sh '''
-            echo current user: $USER
-          '''
+        sh 'whoami'
       }
     }
 
@@ -98,7 +96,7 @@ pipeline {
         }
       }
       steps {
-        sh 'echo current user: $USER'
+        sh ''
         sh 'sam build --template ${SAM_TEMPLATE} --use-container'
         withAWS(
             credentials: env.PIPELINE_USER_CREDENTIAL_ID,
@@ -195,7 +193,6 @@ pipeline {
             role: env.PROD_PIPELINE_EXECUTION_ROLE,
             roleSessionName: 'prod-deployment') {
           sh '''
-            echo current user: $USER
             sam deploy --stack-name ${PROD_STACK_NAME} \
               --template packaged-prod.yaml \
               --capabilities CAPABILITY_IAM \
