@@ -1,5 +1,6 @@
 pipeline {
   agent any
+  tools { nodejs "nodejs" }
   environment {
     PIPELINE_USER_CREDENTIAL_ID = 'ec89e7fc-f443-4785-a6f9-b78297db7717'
     SAM_TEMPLATE = 'template.yaml'
