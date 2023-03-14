@@ -32,17 +32,20 @@ pipeline {
     //     '''
     //   }
     // }
-    stage('echo current user') {
+
+    stage('install dependencies') {
       agent {
         docker {
           // If you only use a single runtime, replace with a proper image from 
           // https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-image-repositories.html
+          // And remove --use-container option in sam build command below
           image 'public.ecr.aws/sam/build-provided'
+          args '--user 0:0 -v /var/run/docker.sock:/var/run/docker.sock'
         }
       }
       steps {
-        wrap([$class: 'BuildUser']) {
-          echo "userId=${BUILD_USER_ID},fullName=${BUILD_USER},email=${BUILD_USER_EMAIL}"
+        sh 'cd ./dependencies/nodejs/'
+        sh 'npm install'
         }
       }
     }
@@ -136,6 +139,7 @@ pipeline {
           // If you only use a single runtime, replace with a proper image from 
           // https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-image-repositories.html
           image 'public.ecr.aws/sam/build-provided'
+          args '--user 0:0 -v /var/run/docker.sock:/var/run/docker.sock'
         }
       }
       steps {
@@ -178,7 +182,7 @@ pipeline {
           // If you only use a single runtime, replace with a proper image from 
           // https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-image-repositories.html
           image 'public.ecr.aws/sam/build-provided'
-          args '-u jenkins:jenkins'
+          args '--user 0:0 -v /var/run/docker.sock:/var/run/docker.sock'
         }
       }
       steps {
