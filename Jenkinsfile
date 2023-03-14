@@ -46,7 +46,6 @@ pipeline {
       steps {
         sh 'cd ./dependencies/nodejs/'
         sh 'npm install'
-        }
       }
     }
 
