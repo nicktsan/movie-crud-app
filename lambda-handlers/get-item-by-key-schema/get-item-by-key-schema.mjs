@@ -1,7 +1,7 @@
 import { DynamoDBClient, GetItemCommand } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 const REGION = process.env.AWS_REGION;
-const dynamo = new DynamoDBClient({region: REGION});
+const dynamo = new DynamoDBClient({ region: REGION });
 //get table name from MOVIE_TABLE environment variable
 const tableName = process.env.MOVIE_TABLE;
 
@@ -27,12 +27,13 @@ export const lambdaHandler = async (event, context) => {
     }
     //All log statements are written to CloudWatch
     console.info('received request get by key schema:', event);
+    const regex2 = (/(%20|\+)/g);
     try {
         const params = {
             TableName: tableName,
             Key: {
                 year: { N: event.pathParameters.year },
-                title: { S: event.pathParameters.title },
+                title: { S: event.pathParameters.title.replace(regex2, ' ') },
             },
         };
         const command = new GetItemCommand(params);

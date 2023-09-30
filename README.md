@@ -131,3 +131,16 @@ aws cloudformation delete-stack --stack-name movie-crud-app
 See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for an introduction to SAM specification, the SAM CLI, and serverless application concepts.
 
 Next, you can use AWS Serverless Application Repository to deploy ready to use Apps that go beyond hello world samples and learn how authors developed their applications: [AWS Serverless Application Repository main page](https://aws.amazon.com/serverless/serverlessrepo/)
+
+## Curl Commands for testing
+Put an item:
+curl -X "PUT" -H "Content-Type: application/json" -d "{\"year\": 2023, \"title\": \"my movie 2023\", \"info\": {\"rentPrice\": 23.99, \"buyPrice\": 23.99}}" https://ufxdio3r07.execute-api.us-east-1.amazonaws.com/Prod/items
+
+Get a specific item
+curl https://ufxdio3r07.execute-api.us-east-1.amazonaws.com/Prod/items/{year}/{title}
+
+Delete an item
+curl -X "DELETE" https://ufxdio3r07.execute-api.us-east-1.amazonaws.com/Prod/items/{year}/{title}
+
+Get all items:
+curl https://ufxdio3r07.execute-api.us-east-1.amazonaws.com/Prod/items

@@ -1,15 +1,15 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
   movie-crud-app
-  
+
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 3
 
 #Conditions:
-#  IsProduction: !Equals [!Ref "AWS::StackName", "sam-app-prod"]
+#  IsProduction: !Equals [!Ref "AWS::StackName", "movie-crud-app-prod"]
 
 Resources:
   GetItemsFunction:
@@ -112,32 +112,32 @@ Resources:
           Properties:
             Path: /items/{year}/{title}
             Method: delete
-  
+
   DependenciesLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
-        LayerName: sam-app-dependencies
-        Description: Dependencies for movie crud app (aws-sdk/client-dynamodb)
-        ContentUri: dependencies/
-        CompatibleRuntimes:
-          - nodejs18.x
-        LicenseInfo: 'MIT'
-        RetentionPolicy: Retain
-  
+      LayerName: sam-app-dependencies
+      Description: Dependencies for movie crud app (aws-sdk/client-dynamodb)
+      ContentUri: dependencies/
+      CompatibleRuntimes:
+        - nodejs18.x
+      LicenseInfo: "MIT"
+      RetentionPolicy: Retain
+
   MovieTable:
     Type: AWS::DynamoDB::Table
-    Properties: 
-      AttributeDefinitions: 
+    Properties:
+      AttributeDefinitions:
         - AttributeName: year
           AttributeType: N
         - AttributeName: title
           AttributeType: S
-      KeySchema: 
+      KeySchema:
         - AttributeName: year
           KeyType: HASH #Partition key
         - AttributeName: title
           KeyType: RANGE #Sort key
-      ProvisionedThroughput: 
+      ProvisionedThroughput:
         ReadCapacityUnits: 10
         WriteCapacityUnits: 10
       TableName: "MovieTable"

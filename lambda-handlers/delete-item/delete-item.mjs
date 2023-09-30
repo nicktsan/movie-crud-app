@@ -1,7 +1,7 @@
 import { DynamoDBClient, DeleteItemCommand } from "@aws-sdk/client-dynamodb";
 import { marshall } from '@aws-sdk/util-dynamodb';
 const REGION = process.env.AWS_REGION;
-const dynamo = new DynamoDBClient({region: REGION});
+const dynamo = new DynamoDBClient({ region: REGION });
 //get table name from MOVIE_TABLE environment variable
 const tableName = process.env.MOVIE_TABLE;
 
@@ -27,19 +27,20 @@ export const lambdaHandler = async (event, context) => {
     }
     //All log statements are written to CloudWatch
     console.info('received request for delete:', event);
+    const regex2 = (/(%20|\+)/g);
     try {
         const params = {
             TableName: tableName,
             Key: {
                 year: { N: event.pathParameters.year },
-                title: { S: event.pathParameters.title },
+                title: { S: event.pathParameters.title.replace(regex2, ' ') },
             },
         };
         const command = new DeleteItemCommand(params);
         console.info(`Tablename: ${tableName}`);
         console.info(`Region: ${REGION}`);
         await dynamo.send(command);
-        respBody = `Deleted item ${event.pathParameters.year} ${event.pathParameters.title}`; 
+        respBody = `Deleted item ${event.pathParameters.year} ${event.pathParameters.title.replace(regex2, ' ')}`;
     } catch (err) {
         sCode = err.statusCode;
         respBody = err.message;
