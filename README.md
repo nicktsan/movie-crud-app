@@ -134,10 +134,13 @@ Next, you can use AWS Serverless Application Repository to deploy ready to use A
 
 ## Curl Commands for testing
 Put an item:
-curl -X "PUT" -H "Content-Type: application/json" -d "{\"year\": 2023, \"title\": \"my movie 2023\", \"info\": {\"rentPrice\": 23.99, \"buyPrice\": 23.99}}" https://ufxdio3r07.execute-api.us-east-1.amazonaws.com/Prod/items
+curl -X "PUT" -H "Content-Type: application/json" -d "{\"year\": 1995, \"title\": \"Braveheart\", \"info\": {\"rentPrice\": 1.99, \"buyPrice\": 19.99}}" https://ufxdio3r07.execute-api.us-east-1.amazonaws.com/Prod/items
 
-Get a specific item
+Get a specific item by year and title
 curl https://ufxdio3r07.execute-api.us-east-1.amazonaws.com/Prod/items/{year}/{title}
+
+Get a specific item by title only
+curl https://ufxdio3r07.execute-api.us-east-1.amazonaws.com/Prod/titles/{title}
 
 Delete an item
 curl -X "DELETE" https://ufxdio3r07.execute-api.us-east-1.amazonaws.com/Prod/items/{year}/{title}

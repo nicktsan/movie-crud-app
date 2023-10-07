@@ -62,6 +62,32 @@ Resources:
           Properties:
             Path: /items/{year}/{title}
             Method: get
+  GetItemByTitleFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: lambda-handlers/get-item-by-title/
+      Handler: get-item-by-title.lambdaHandler
+      Runtime: nodejs18.x
+      Description: A simple function to get item by title
+      Policies:
+        #Give Create/Read/Update/Delete permissions to MovieTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MovieTable
+      Environment:
+        Variables:
+          #Make table name accessible as environment variable from function code during execution
+          MOVIE_TABLE: !Ref MovieTable
+          TITLE_INDEX: MovieTitleIndex
+      Architectures:
+        - x86_64
+      Layers:
+        - !Ref DependenciesLayer
+      Events:
+        GetItemByTitle:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /titles/{title}
+            Method: get
   PutItemFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -137,6 +163,21 @@ Resources:
           KeyType: HASH #Partition key
         - AttributeName: title
           KeyType: RANGE #Sort key
+      GlobalSecondaryIndexes:
+        - IndexName: MovieTitleIndex
+          KeySchema:
+            - AttributeName: title
+              KeyType: HASH #Partition key
+            - AttributeName: year
+              KeyType: RANGE #Sort key
+          Projection:
+            NonKeyAttributes:
+              - info
+            ProjectionType: INCLUDE
+          ProvisionedThroughput:
+            ReadCapacityUnits: 10
+            WriteCapacityUnits: 10
+
       ProvisionedThroughput:
         ReadCapacityUnits: 10
         WriteCapacityUnits: 10
@@ -161,6 +202,12 @@ Outputs:
   GetItemByKeySchemaFunctionIamRole:
     Description: "Implicit IAM Role created for Movie Crud function"
     Value: !GetAtt GetItemByKeySchemaFunctionRole.Arn
+  GetItemByTitleFunction:
+    Description: "Movie Crud Lambda Function ARN"
+    Value: !GetAtt GetItemByTitleFunction.Arn
+  GetItemByTitleFunctionIamRole:
+    Description: "Implicit IAM Role created for Movie Crud function"
+    Value: !GetAtt GetItemByTitleFunctionRole.Arn
   PutItemFunction:
     Description: "Movie Crud Lambda Function ARN"
     Value: !GetAtt PutItemFunction.Arn
