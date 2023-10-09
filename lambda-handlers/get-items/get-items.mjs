@@ -1,7 +1,7 @@
 import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 const REGION = process.env.AWS_REGION;
-const dynamo = new DynamoDBClient({region: REGION});
+const dynamo = new DynamoDBClient({ region: REGION });
 const tableName = process.env.MOVIE_TABLE;
 //get table name from MOVIE_TABLE environment variable
 
@@ -51,10 +51,16 @@ export const lambdaHandler = async (event, context) => {
         //console.log({ requestId, cfId, extendedRequestId });
     } finally {
         respBody = JSON.stringify(respBody);
-        console.info(`About to return status: ${sCode}, respBody: ${respBody}`);   
+        console.info(`About to return status: ${sCode}, respBody: ${respBody}`);
     }
     const response = {
         statusCode: sCode,
+        headers: {
+            "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with",
+            "Access-Control-Allow-Origin": "*", // Allow from anywhere 
+            //"Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE,PATCH" // Allow only GET request 
+            "Access-Control-Allow-Methods": "OPTIONS,GET"
+        },
         body: respBody
     };
     return response;
