@@ -57,9 +57,11 @@ export const lambdaHandler = async (event, context) => {
         statusCode: sCode,
         headers: {
             "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with",
-            "Access-Control-Allow-Origin": "*", // Allow from anywhere 
+            /* Allow from anywhere. Generally, * is extremely risky since it allows 
+            any site to access the api*/
+            "Access-Control-Allow-Origin": "*",
             //"Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE,PATCH" // Allow only GET request 
-            "Access-Control-Allow-Methods": "OPTIONS,GET"
+            "Access-Control-Allow-Methods": "GET"
         },
         body: respBody
     };
