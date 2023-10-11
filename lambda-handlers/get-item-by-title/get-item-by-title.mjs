@@ -43,7 +43,8 @@ export const lambdaHandler = async (event, context) => {
             KeyConditionExpression: "title  = :HprimaryKey",
             ExpressionAttributeValues: {
                 ':HprimaryKey': { S: event.pathParameters.title.replace(regex2, ' ') }
-            }
+            },
+            //ProjectionExpression: "rentPrice, buyPrice",
         };
         const command = new QueryCommand(params);
         console.info(`Tablename: ${tableName}`);

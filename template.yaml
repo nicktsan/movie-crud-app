@@ -172,15 +172,16 @@ Resources:
               KeyType: RANGE #Sort key
           Projection:
             NonKeyAttributes:
-              - info
+              - rentPrice
+              - buyPrice
             ProjectionType: INCLUDE
           ProvisionedThroughput:
-            ReadCapacityUnits: 10
-            WriteCapacityUnits: 10
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
 
       ProvisionedThroughput:
-        ReadCapacityUnits: 10
-        WriteCapacityUnits: 10
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
       TableName: "MovieTable"
 
 Outputs:
